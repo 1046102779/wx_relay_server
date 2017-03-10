@@ -9,6 +9,20 @@
 ## 新增服务的可靠性措施
     1. 服务启动后，立即读取etcd中的所有微信公众平台和公众号数据，加载到内存中。 并监听所有token
 
+## Index
+
+```go
+type WxRelayServer struct{}
+// 获取公众号平台基本信息，包括appid，token等信息
+func (t *WxRelayServer) GetOfficialAccountPlatformInfo(in *pb.OfficialAccountPlatform, out *pb.OfficialAccountPlatform) error
+// 存储托管公众号的token相关信息
+func (t *WxRelayServer) StoreOfficialAccountInfo(in *pb.OfficialAccount, out *pb.OfficialAccount) error
+// 获取公众号token信息, 用于公众号第三方平台发起公众号的托管业务
+func (t *WxRelayServer) GetOfficialAccountInfo(in *pb.OfficialAccount, out *pb.OfficialAccount) error
+// 刷新component_verify_ticket， 并同时中继服务器刷公众号第三方平台的其他token
+func (t *WxRelayServer) RefreshComponentVerifyTicket(in *pb.ComponentVerifyTicket, out *pb.ComponentVerifyTicket) error
+```
+
 ## 说明
 
 + `希望与大家一起成长，有任何该服务运行或者代码问题，可以及时找我沟通，喜欢开源，热爱开源, 欢迎多交流`   
