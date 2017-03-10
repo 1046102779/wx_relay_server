@@ -9,6 +9,12 @@
 ## 新增服务的可靠性措施
     1. 服务启动后，立即读取etcd中的所有微信公众平台和公众号数据，加载到内存中。 并监听所有token
 
+Standard  `go get`:
+
+```go
+$  go get -v -u github.com/1046102779/wx_relay_server
+```
+
 ## Index
 
 ```go
