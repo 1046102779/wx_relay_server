@@ -2,6 +2,7 @@ package models
 
 import (
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/1046102779/common/consts"
@@ -14,6 +15,7 @@ import (
 
 var (
 	EtcdClientInstance *EtcdClient
+	mux                sync.RWMutex
 )
 
 // ETCD读写、监听相关操作
@@ -21,7 +23,9 @@ type EtcdClient struct {
 	KApi client.KeysAPI
 }
 
-func GetEtcdClientInstance() {
+func GetEtcdClientInstance() *EtcdClient {
+	mux.Lock()
+	defer mux.Unlock()
 	if EtcdClientInstance == nil {
 		if c, err := client.New(client.Config{
 			Endpoints: []string{conf.EtcdAddr},
@@ -32,7 +36,7 @@ func GetEtcdClientInstance() {
 			EtcdClientInstance = &EtcdClient{KApi: client.NewKeysAPI(c)}
 		}
 	}
-	return
+	return EtcdClientInstance
 }
 
 func (t *EtcdClient) ForceMKDir(dir string) (retcode int, err error) {
