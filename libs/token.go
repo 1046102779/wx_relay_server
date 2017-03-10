@@ -5,9 +5,9 @@ import (
 	"encoding/xml"
 	"fmt"
 
-	"github.com/1046102779/common/consts"
 	"github.com/1046102779/common/httpRequest"
 	"github.com/1046102779/wx_relay_server/conf"
+	"github.com/1046102779/wx_relay_server/consts"
 	. "github.com/1046102779/wx_relay_server/logger"
 
 	"github.com/gomydodo/wxencrypter"
