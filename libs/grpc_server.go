@@ -1,5 +1,5 @@
 // rpc服务列表
-package models
+package libs
 
 import (
 	"fmt"
@@ -8,7 +8,6 @@ import (
 	pb "github.com/1046102779/igrpc"
 	"github.com/1046102779/wx_relay_server/conf"
 	. "github.com/1046102779/wx_relay_server/logger"
-	"github.com/astaxie/beego"
 )
 
 type WxRelayServer struct{}
@@ -48,7 +47,7 @@ func (t *WxRelayServer) StoreOfficialAccountInfo(in *pb.OfficialAccount, out *pb
 	}
 
 	fields := strings.Split(conf.ListenPaths[0], "/")
-	key := fmt.Sprintf("/%s/%s/%s/%s/%s", beego.BConfig.RunMode, fields[1], fields[2], in.Appid, fields[3])
+	key := fmt.Sprintf("/%s/%s/%s/%s/%s", conf.Cconfig.RunMode, fields[1], fields[2], in.Appid, fields[3])
 	_, err = EtcdClientInstance.Put(key, in.AuthorizerAccessToken, int(in.AuthorizerAccessTokenExpiresIn))
 	if err != nil {
 		Logger.Error(err.Error())
@@ -99,7 +98,7 @@ func (t *WxRelayServer) RefreshComponentVerifyTicket(in *pb.ComponentVerifyTicke
 		if err := req.GetComponentAccessToken(); err != nil {
 			Logger.Error("get param `component_access_token | expires_in` failed. " + err.Error())
 		} else {
-			_, err = EtcdClientInstance.Put(fmt.Sprintf("/%s%s", beego.BConfig.RunMode, conf.ListenPaths[1]), conf.WechatAuthTTL.ComponentAccessToken, conf.WechatAuthTTL.ComponentAccessTokenExpiresIn)
+			_, err = EtcdClientInstance.Put(fmt.Sprintf("/%s%s", conf.Cconfig.RunMode, conf.ListenPaths[1]), conf.WechatAuthTTL.ComponentAccessToken, conf.WechatAuthTTL.ComponentAccessTokenExpiresIn)
 			if err != nil {
 				Logger.Error(err.Error())
 			}
@@ -109,7 +108,7 @@ func (t *WxRelayServer) RefreshComponentVerifyTicket(in *pb.ComponentVerifyTicke
 		if err := req.GetPreAuthCode(); err != nil {
 			Logger.Error("get param `pre_auth_code` failed. " + err.Error())
 		} else {
-			_, err = EtcdClientInstance.Put(fmt.Sprintf("/%s%s", beego.BConfig.RunMode, conf.ListenPaths[2]), conf.WechatAuthTTL.PreAuthCode, conf.WechatAuthTTL.PreAuthCodeExpiresIn)
+			_, err = EtcdClientInstance.Put(fmt.Sprintf("/%s%s", conf.Cconfig.RunMode, conf.ListenPaths[2]), conf.WechatAuthTTL.PreAuthCode, conf.WechatAuthTTL.PreAuthCodeExpiresIn)
 			if err != nil {
 				Logger.Error(err.Error())
 			}

@@ -6,21 +6,20 @@ import (
 	"time"
 
 	"github.com/1046102779/wx_relay_server/conf"
-	"github.com/1046102779/wx_relay_server/models"
+	"github.com/1046102779/wx_relay_server/libs"
 
-	"github.com/astaxie/beego"
 	metrics "github.com/rcrowley/go-metrics"
 	"github.com/smallnest/rpcx"
 	"github.com/smallnest/rpcx/codec"
 	"github.com/smallnest/rpcx/plugin"
 )
 
-func startRPCService(rpcAddr string, etcdAddr string, wxRelayServer *models.WxRelayServer) {
+func startRPCService(rpcAddr string, etcdAddr string, wxRelayServer *libs.WxRelayServer) {
 	server := rpcx.NewServer()
 	rplugin := &plugin.EtcdRegisterPlugin{
 		ServiceAddress: "tcp@" + rpcAddr,
 		EtcdServers:    []string{etcdAddr},
-		BasePath:       fmt.Sprintf("/%s/%s", beego.BConfig.RunMode, "rpcx"),
+		BasePath:       fmt.Sprintf("/%s/%s", conf.Cconfig.RunMode, "rpcx"),
 		Metrics:        metrics.NewRegistry(),
 		Services:       make([]string, 0),
 		UpdateInterval: time.Minute,
@@ -36,21 +35,21 @@ func startRPCService(rpcAddr string, etcdAddr string, wxRelayServer *models.WxRe
 // etcd token相关数据加载到内存中
 func initEtcdTokens() {
 	// load component access token
-	key := fmt.Sprintf("/%s%s", beego.BConfig.RunMode, conf.ListenPaths[1])
-	maps, _, _ := models.EtcdClientInstance.Get(key)
+	key := fmt.Sprintf("/%s%s", conf.Cconfig.RunMode, conf.ListenPaths[1])
+	maps, _, _ := libs.EtcdClientInstance.Get(key)
 	for _, value := range maps {
 		conf.WechatAuthTTL.ComponentAccessToken = value
 	}
 	// load preauthcode
-	key = fmt.Sprintf("/%s%s", beego.BConfig.RunMode, conf.ListenPaths[2])
-	maps, _, _ = models.EtcdClientInstance.Get(key)
+	key = fmt.Sprintf("/%s%s", conf.Cconfig.RunMode, conf.ListenPaths[2])
+	maps, _, _ = libs.EtcdClientInstance.Get(key)
 	for _, value := range maps {
 		conf.WechatAuthTTL.PreAuthCode = value
 	}
 	// load official accounts token
 	fields := strings.Split(conf.ListenPaths[0], "/")
-	key = fmt.Sprintf("/%s/%s/%s/%s", beego.BConfig.RunMode, fields[1], fields[2], fields[3])
-	maps, _, _ = models.EtcdClientInstance.Get(key)
+	key = fmt.Sprintf("/%s/%s/%s/%s", conf.Cconfig.RunMode, fields[1], fields[2], fields[3])
+	maps, _, _ = libs.EtcdClientInstance.Get(key)
 	var (
 		appid string
 	)
@@ -64,20 +63,14 @@ func initEtcdTokens() {
 			AuthorizerAccessToken: value,
 		}
 	}
-	go models.EtcdClientInstance.Watch(fmt.Sprintf("/%s/%s/%s", beego.BConfig.RunMode, fields[1], fields[2]))
+	go libs.EtcdClientInstance.Watch(fmt.Sprintf("/%s/%s/%s", conf.Cconfig.RunMode, fields[1], fields[2]))
 }
 
 func main() {
-	if beego.BConfig.RunMode == "dev" {
-		beego.BConfig.WebConfig.DirectoryIndex = true
-		beego.BConfig.WebConfig.StaticDir["/swagger"] = "swagger"
-	}
 	fmt.Println("main starting...")
-	models.GetEtcdClientInstance()
+	libs.GetEtcdClientInstance()
 	// init etcd tokens
 	initEtcdTokens()
 
-	go startRPCService(conf.RpcAddr, conf.EtcdAddr, &models.WxRelayServer{})
-
-	beego.Run()
+	startRPCService(conf.RpcAddr, conf.EtcdAddr, &libs.WxRelayServer{})
 }

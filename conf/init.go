@@ -1,25 +1,32 @@
 package conf
 
 import (
+	"log"
 	"strings"
 
-	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/config"
 )
 
 var (
-	FirstInitital             bool = false
-	WechatAuthTTL             *WechatAuthTTLInfo
+	FirstInitital             bool               = false
+	WechatAuthTTL             *WechatAuthTTLInfo = new(WechatAuthTTLInfo)
 	AuthorizerAccessTokenName string
 	ComponentAccessTokenName  string
 	PreAuthCodeName           string
 	QueryAuthCodeTest         string
 	ListenPaths               []string
 
-	HostName          string
-	Servers           []string
+	HostName string
+	//Servers           []string
 	RpcAddr, EtcdAddr string
+
+	Cconfig *GlobalConfig = new(GlobalConfig)
 )
 
+type GlobalConfig struct {
+	AppName string
+	RunMode string
+}
 type AuthorizerManagementInfo struct {
 	AuthorizerAccessToken          string // 授权方接口调用凭据（在授权的公众号具备API权限时，才有此返回值），也简称为令牌
 	AuthorizerAccessTokenExpiresIn int
@@ -41,21 +48,46 @@ type WechatAuthTTLInfo struct {
 	AuthorizerMap                  map[string]AuthorizerManagementInfo // 每一个公众号appid与自己的access_token和refresh_token的映射
 }
 
+func initConfig() {
+	iniconf, err := config.NewConfig("ini", "conf/app.conf")
+	if err != nil {
+		log.Fatal(err)
+	}
+	// global config
+	Cconfig.AppName = iniconf.String("appname")
+	Cconfig.RunMode = iniconf.String("runmode")
+	if Cconfig.AppName == "" || Cconfig.RunMode == "" {
+		panic("param `global config` empty")
+	}
+	// rpc config
+	RpcAddr = iniconf.String("rpc::address")
+	//Servers = iniconf.Strings("rpc::servers")
+	if RpcAddr == "" {
+		panic("param `rpc::address`  empty")
+	}
+
+	// etcd config
+	EtcdAddr = iniconf.String("etcd::address")
+	ListenPaths = iniconf.Strings("etcd::listenpaths")
+	if EtcdAddr == "" || ListenPaths == nil || len(ListenPaths) <= 0 {
+		panic("param `etcd config` empty")
+	}
+
+	// wechat config
+	WechatAuthTTL.EncodingAesKey = iniconf.String("wechats::encodingAesKey")
+	WechatAuthTTL.Token = iniconf.String("wechats::token")
+	WechatAuthTTL.AppId = iniconf.String("wechats::appid")
+	WechatAuthTTL.AppSecret = iniconf.String("wechats::appsecret")
+	HostName = iniconf.String("wechats::hostname")
+	if WechatAuthTTL.EncodingAesKey == "" || WechatAuthTTL.Token == "" ||
+		WechatAuthTTL.AppId == "" || WechatAuthTTL.AppSecret == "" {
+		panic("param `wechats config` empty")
+	}
+	return
+}
+
 func initEtcdClient() {
-	RpcAddr = strings.TrimSpace(beego.AppConfig.String("rpc::address"))
-	EtcdAddr = strings.TrimSpace(beego.AppConfig.String("etcd::address"))
-	if "" == EtcdAddr || "" == RpcAddr {
-		panic("param `etcd::address || etcd::address` empty")
-	}
-	serverTemp := beego.AppConfig.String("rpc::servers")
-	Servers = strings.Split(serverTemp, ",")
-	// etcd 目录微信token过期监听
 	// 监听目录数据
-	paths := beego.AppConfig.String("etcd::listenPaths")
-	if "" == strings.TrimSpace(paths) {
-		panic("param `etcd::listenPaths` empty")
-	}
-	ListenPaths = strings.Split(paths, ",")
 	strs := strings.Split(ListenPaths[0], "/")
 	AuthorizerAccessTokenName = strs[len(strs)-1]
 	strs = strings.Split(ListenPaths[1], "/")
@@ -64,32 +96,7 @@ func initEtcdClient() {
 	PreAuthCodeName = strs[len(strs)-1]
 }
 
-func initWechatAuthTTLs() {
-	WechatAuthTTL = new(WechatAuthTTLInfo)
-	WechatAuthTTL.EncodingAesKey = beego.AppConfig.String("wechats::encodingAesKey")
-	if "" == strings.TrimSpace(WechatAuthTTL.EncodingAesKey) {
-		panic("param `wechats::encodingAesKey` empty")
-	}
-	WechatAuthTTL.Token = beego.AppConfig.String("wechats::token")
-	if "" == strings.TrimSpace(WechatAuthTTL.Token) {
-		panic("param `wechats::token`  empty")
-	}
-	WechatAuthTTL.AppId = beego.AppConfig.String("wechats::appid")
-	if "" == strings.TrimSpace(WechatAuthTTL.AppId) {
-		panic("param `wechats::appid` empty")
-	}
-	WechatAuthTTL.AppSecret = beego.AppConfig.String("wechats::appsecret")
-	if "" == strings.TrimSpace(WechatAuthTTL.AppSecret) {
-		panic("param `wechats::appsecret` empty")
-	}
-	HostName = beego.AppConfig.String("wechats::hostname")
-	if "" == strings.TrimSpace(HostName) {
-		panic("param `wechats::hostname` empty")
-	}
-	return
-}
-
 func init() {
-	initWechatAuthTTLs()
+	initConfig()
 	initEtcdClient()
 }
