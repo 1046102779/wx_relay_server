@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"strings"
 
-	pb "github.com/1046102779/igrpc"
 	"github.com/1046102779/wx_relay_server/conf"
+	pb "github.com/1046102779/wx_relay_server/igrpc"
 	. "github.com/1046102779/wx_relay_server/logger"
 )
 
