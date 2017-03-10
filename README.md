@@ -1,5 +1,8 @@
 # 微信中继服务器
- 目的：其他服务采用拉服务模式，通过rpcx进行rpc通信，获取相关微信token. 用户微信公众号第三方平台刷公众号平台和托管的公众号appid的相关token, 该服务不能停超过10分钟. 主要刷公众号第三方平台的component_access_token和preauthcode, 公众号的authorizer_access_token和authorizer_refresh_token
+ 目的：其他服务采用pull模式，通过rpcx进行rpc通信，获取相关微信token. 用户微信公众号第三方平台刷公众号平台和托管的公众号appid的相关token, 该服务不能停超过10分钟(实例自动拉起crontab). 主要刷公众号第三方平台的component_access_token和preauthcode, 公众号的authorizer_access_token和authorizer_refresh_token
+
+ 好处：微信公众号第三方平台中继服务器，用于刷新公众号平台自身的token和托管的公众号token, 使开发者只关注微信公众号第三方平台的业务逻辑，同时业务实例可以反复重启，不会对已托管的公众号造成任何影响
+ 
 
  存储方式：etcd存储rpc服务地址和微信公众号平台和公众号token, 使用etcd的ttl特性，并watch并刷新
 
