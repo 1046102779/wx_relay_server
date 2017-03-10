@@ -13,12 +13,16 @@
 
 ```go
 type WxRelayServer struct{}
+
 // 获取公众号平台基本信息，包括appid，token等信息
 func (t *WxRelayServer) GetOfficialAccountPlatformInfo(in *pb.OfficialAccountPlatform, out *pb.OfficialAccountPlatform) error
+
 // 存储托管公众号的token相关信息
 func (t *WxRelayServer) StoreOfficialAccountInfo(in *pb.OfficialAccount, out *pb.OfficialAccount) error
+
 // 获取公众号token信息, 用于公众号第三方平台发起公众号的托管业务
 func (t *WxRelayServer) GetOfficialAccountInfo(in *pb.OfficialAccount, out *pb.OfficialAccount) error
+
 // 刷新component_verify_ticket， 并同时中继服务器刷公众号第三方平台的其他token
 func (t *WxRelayServer) RefreshComponentVerifyTicket(in *pb.ComponentVerifyTicket, out *pb.ComponentVerifyTicket) error
 ```
