@@ -9,4 +9,5 @@ install:
     - go get -v -u  github.com/gomydodo/wxencrypter
 
 script:
+  - make
   - go build && go install
