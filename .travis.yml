@@ -1,0 +1,12 @@
+language: go 
+
+go: 
+    - 1.7
+  
+install:
+    - go get -v -u github.com/pkg/errors
+    - go get -v -u github.com/coreos/etcd/client
+    - go get -v -u  github.com/gomydodo/wxencrypter
+
+script:
+  - go build && go install

@@ -3,7 +3,7 @@ package logger
 import (
 	"fmt"
 
-	"git.kissdata.com/ycfm/wx_relay_server/conf"
+	"github.com/1046102779/wx_relay_server/conf"
 	"github.com/astaxie/beego/logs"
 )
 
