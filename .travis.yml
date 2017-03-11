@@ -6,7 +6,13 @@ go:
 install:
     - go get -v -u github.com/pkg/errors
     - go get -v -u github.com/coreos/etcd/client
-    - go get -v -u  github.com/gomydodo/wxencrypter
+    - go get -v -u github.com/gomydodo/wxencrypter
+    - go get -v -u github.com/astaxie/beego/config
+    - go get -v -u github.com/astaxie/beego/logs
+    - go get -v -u github.com/golang/protobuf/proto
+    - go get -v -u github.com/smallnest/rpcx
+    - go get -v -u github.com/smallnest/rpcx/codec
+    - go get -v -u github.com/smallnest/rpcx/plugin
 
 script:
   - make
