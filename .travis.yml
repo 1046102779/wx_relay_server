@@ -15,5 +15,4 @@ install:
     - go get -v -u github.com/smallnest/rpcx/plugin
 
 script:
-  - make
   - go build && go install
