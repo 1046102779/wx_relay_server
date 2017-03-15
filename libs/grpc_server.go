@@ -87,6 +87,7 @@ func (t *WxRelayServer) RefreshComponentVerifyTicket(in *pb.ComponentVerifyTicke
 	req.Decrypter(in.TimeStamp, in.Nonce, in.MsgSign, in.Bts)
 	// 全网发布测试代码集合
 	if isPublishTest := req.PublishTest(); isPublishTest {
+		out.AuthorizationCode = req.AuthorizationCode
 		return
 	}
 

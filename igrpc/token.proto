@@ -24,4 +24,5 @@ message ComponentVerifyTicket {
     string Nonce = 2;
     string MsgSign = 3;
     bytes bts = 4;
+    string AuthorizationCode = 5;
 }
