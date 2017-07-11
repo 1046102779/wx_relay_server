@@ -48,7 +48,7 @@ func initEtcdTokens() {
 	}
 	// load official accounts token
 	fields := strings.Split(conf.ListenPaths[0], "/")
-	key = fmt.Sprintf("/%s/%s/%s/%s", conf.Cconfig.RunMode, fields[1], fields[2], fields[3])
+	key = fmt.Sprintf("/%s/%s/%s", conf.Cconfig.RunMode, fields[1], fields[2])
 	maps, _, _ = libs.EtcdClientInstance.Get(key)
 	var (
 		appid string
@@ -57,8 +57,11 @@ func initEtcdTokens() {
 		conf.WechatAuthTTL.AuthorizerMap = make(map[string]conf.AuthorizerManagementInfo)
 	}
 	for key, value := range maps {
+		if !strings.HasPrefix(key, fmt.Sprintf("/%s/wechats/thirdplatform/wx", conf.Cconfig.RunMode)) {
+			continue
+		}
 		fields = strings.Split(key, "/")
-		appid = fields[len(fields)-1]
+		appid = fields[len(fields)-2]
 		conf.WechatAuthTTL.AuthorizerMap[appid] = conf.AuthorizerManagementInfo{
 			AuthorizerAccessToken: value,
 		}
