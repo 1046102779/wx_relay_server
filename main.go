@@ -60,8 +60,8 @@ func initEtcdTokens() {
 		if !strings.HasPrefix(key, fmt.Sprintf("/%s/wechats/thirdplatform/wx", conf.Cconfig.RunMode)) {
 			continue
 		}
-		fields = strings.Split(key, "/")
-		appid = fields[len(fields)-2]
+		fieldTemps := strings.Split(key, "/")
+		appid = fieldTemps[len(fieldTemps)-2]
 		conf.WechatAuthTTL.AuthorizerMap[appid] = conf.AuthorizerManagementInfo{
 			AuthorizerAccessToken: value,
 		}
