@@ -48,3 +48,11 @@
 2017/03/15 17:57:38 [I] [etcdclient.go:100] [/dev/wechats/thirdplatform/TestAuthorizerAccessToken] left Get.
 2017/03/15 17:57:38 [I] [etcdclient.go:139] [/dev/wechats/thirdplatform] enter Watch.
 2017/03/15 17:57:38 [I] [etcdclient.go:209] [/dev/wechats/thirdplatform] left Watch.
+2018/03/28 23:55:00.579 [I] [etcdclient.go:85] [/dev/wechats/thirdplatform/TestComponentAccessToken] enter Get.
+2018/03/28 23:55:00.585 [I] [etcdclient.go:100] [/dev/wechats/thirdplatform/TestComponentAccessToken] left Get.
+2018/03/28 23:55:00.585 [I] [etcdclient.go:85] [/dev/wechats/thirdplatform/TestPreAuthCode] enter Get.
+2018/03/28 23:55:00.585 [I] [etcdclient.go:100] [/dev/wechats/thirdplatform/TestPreAuthCode] left Get.
+2018/03/28 23:55:00.585 [I] [etcdclient.go:85] [/dev/wechats/thirdplatform] enter Get.
+2018/03/28 23:55:00.586 [I] [etcdclient.go:100] [/dev/wechats/thirdplatform] left Get.
+2018/03/28 23:55:00.586 [I] [etcdclient.go:139] [/dev/wechats/thirdplatform] enter Watch.
+2018/03/28 23:55:00.586 [I] [etcdclient.go:209] [/dev/wechats/thirdplatform] left Watch.

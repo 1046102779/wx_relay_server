@@ -2,35 +2,13 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 	"strings"
-	"time"
 
 	"github.com/1046102779/wx_relay_server/conf"
 	"github.com/1046102779/wx_relay_server/libs"
-
-	metrics "github.com/rcrowley/go-metrics"
-	"github.com/smallnest/rpcx"
-	"github.com/smallnest/rpcx/codec"
-	"github.com/smallnest/rpcx/plugin"
+	"github.com/hprose/hprose-golang/rpc"
 )
-
-func startRPCService(rpcAddr string, etcdAddr string, wxRelayServer *libs.WxRelayServer) {
-	server := rpcx.NewServer()
-	rplugin := &plugin.EtcdRegisterPlugin{
-		ServiceAddress: "tcp@" + rpcAddr,
-		EtcdServers:    []string{etcdAddr},
-		BasePath:       fmt.Sprintf("/%s/%s", conf.Cconfig.RunMode, "rpcx"),
-		Metrics:        metrics.NewRegistry(),
-		Services:       make([]string, 0),
-		UpdateInterval: time.Minute,
-	}
-	rplugin.Start()
-	server.PluginContainer.Add(rplugin)
-	server.PluginContainer.Add(plugin.NewMetricsPlugin())
-	server.RegisterName("wx_relay_server", wxRelayServer, "weight=1&m=devops")
-	server.ServerCodecFunc = codec.NewProtobufServerCodec
-	server.Serve("tcp", rpcAddr)
-}
 
 // etcd token相关数据加载到内存中
 func initEtcdTokens() {
@@ -69,11 +47,17 @@ func initEtcdTokens() {
 	go libs.EtcdClientInstance.Watch(fmt.Sprintf("/%s/%s/%s", conf.Cconfig.RunMode, fields[1], fields[2]))
 }
 
+func startHproseServe(addr string) {
+	service := rpc.NewHTTPService()
+	service.AddAllMethods(&libs.WxRelayServer{})
+	http.ListenAndServe(addr, service)
+}
+
 func main() {
 	fmt.Println("main starting...")
 	libs.GetEtcdClientInstance()
 	// init etcd tokens
 	initEtcdTokens()
 
-	startRPCService(conf.RpcAddr, conf.EtcdAddr, &libs.WxRelayServer{})
+	startHproseServe(conf.RpcAddr)
 }
