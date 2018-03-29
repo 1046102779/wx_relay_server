@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/1046102779/common/rpc"
+	"github.com/1046102779/common/types"
 	"github.com/1046102779/wx_relay_server/conf"
 	. "github.com/1046102779/wx_relay_server/logger"
 )
@@ -13,7 +13,7 @@ import (
 type WxRelayServer struct{}
 
 // 获取公众号平台基本信息
-func (t *WxRelayServer) GetOfficialAccountPlatformInfo() (oap *rpc.OfficialAccountPlatform, err error) {
+func (t *WxRelayServer) GetOfficialAccountPlatformInfo() (oap *types.OfficialAccountPlatform, err error) {
 	Logger.Info("enter GetOfficialAccountPlatformInfo.")
 	defer Logger.Info("left GetOfficialAccountPlatformInfo.")
 	oap.Appid = conf.WechatAuthTTL.AppId
@@ -27,7 +27,7 @@ func (t *WxRelayServer) GetOfficialAccountPlatformInfo() (oap *rpc.OfficialAccou
 }
 
 // 存储托管公众号的token相关信息
-func (t *WxRelayServer) StoreOfficialAccountInfo(oa *rpc.OfficialAccount) (err error) {
+func (t *WxRelayServer) StoreOfficialAccountInfo(oa *types.OfficialAccount) (err error) {
 	Logger.Info("[%v] enter StoreOfficialAccountInfo.", oa.Appid)
 	defer Logger.Info("[%v] left StoreOfficialAccountInfo.", oa.Appid)
 	defer func() { err = nil }()
@@ -52,7 +52,7 @@ func (t *WxRelayServer) StoreOfficialAccountInfo(oa *rpc.OfficialAccount) (err e
 }
 
 // 获取公众号token信息
-func (t *WxRelayServer) GetOfficialAccountInfo(appid string) (oa *rpc.OfficialAccount, err error) {
+func (t *WxRelayServer) GetOfficialAccountInfo(appid string) (oa *types.OfficialAccount, err error) {
 	Logger.Info("[%v] enter GetOfficialAccountInfo.", appid)
 	defer Logger.Info("[%v] left GetOfficialAccountInfo.", appid)
 	defer func() { err = nil }()
@@ -72,7 +72,7 @@ func (t *WxRelayServer) GetOfficialAccountInfo(appid string) (oa *rpc.OfficialAc
 }
 
 // 刷新component_verify_ticket
-func (t *WxRelayServer) RefreshComponentVerifyTicket(cvt *rpc.ComponentVerifyTicket) (code string, err error) {
+func (t *WxRelayServer) RefreshComponentVerifyTicket(cvt *types.ComponentVerifyTicket) (code string, err error) {
 	Logger.Info("[%v] enter RefreshComponentVerifyTicket. ", cvt.TimeStamp)
 	defer Logger.Info("[%v] left RefreshComponentVerifyTicket. ", cvt.TimeStamp)
 	defer func() {
